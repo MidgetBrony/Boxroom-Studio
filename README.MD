@@ -55,6 +55,7 @@ The standard version of BOXROOM ignores custom launch settings.
 If you want to launch emulators, custom games, or other non-Steam
 titles, install **Boxroom-Plus**.
 
+**GitHub:** https://github.com/MidgetBrony/Boxroom-Plus
 ------------------------------------------------------------------------
 
 ## Sync Owned_Games.json
