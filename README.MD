@@ -3,8 +3,7 @@
 A companion application for **BOXROOM** that makes adding and editing
 custom games easy.
 
->
-> `![Mario running in BOXROOM](Docs/image.png)`
+![Mario running in BOXROOM](DOCS/image.png)`
 
 ------------------------------------------------------------------------
 
