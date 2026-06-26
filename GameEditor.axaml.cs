@@ -16,7 +16,7 @@ namespace Boxroom_Studio;
 public partial class GameEditor : UserControl
 {
     private CacheGame? _currentGame;
-
+    public static event Action<CacheGame>? GameSaved;
     public GameEditor()
     {
         InitializeComponent();
@@ -131,7 +131,7 @@ public partial class GameEditor : UserControl
             return;
 
         await lookup.ShowDialog(owner);
-
+        Debug.WriteLine($"After Dialog: {lookup.SelectedGame?.Name ?? "NULL"}");
         if (lookup.SelectedGame == null)
             return;
 
@@ -140,6 +140,9 @@ public partial class GameEditor : UserControl
 
     private async Task ApplyIGDBGame(IGDBGame selectedGame)
     {
+        Debug.WriteLine($"ApplyIGDBGame: {_currentGame?.AppId}");
+        Debug.WriteLine($"Selected: {selectedGame?.Name}");
+
         if (selectedGame == null || _currentGame == null)
             return;
 
@@ -323,6 +326,9 @@ public partial class GameEditor : UserControl
             await repo.SaveGameAsync(_currentGame);
 
             EditorStatus.Text = "Game saved successfully.";
+
+
+            GameSaved?.Invoke(_currentGame);
         }
         finally
         {

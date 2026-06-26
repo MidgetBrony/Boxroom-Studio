@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Boxroom_Studio
@@ -36,6 +37,29 @@ namespace Boxroom_Studio
                 Debug.WriteLine("LoadCustomGames()");
                 await LoadCustomGames();
             };
+
+            GameEditor.GameSaved += GameEditor_GameSaved;
+        }
+
+        private void GameEditor_GameSaved(CacheGame game)
+        {
+            ListBoxItem? existing = GamesList.Items
+                .OfType<ListBoxItem>()
+                .FirstOrDefault(i =>
+                    i.Tag is CacheGame g &&
+                    g.AppId == game.AppId);
+
+            if (existing != null)
+            {
+                existing.Content = game.Meta.Name;
+                return;
+            }
+
+            GamesList.Items.Add(new ListBoxItem
+            {
+                Content = game.Meta.Name,
+                Tag = game
+            });
         }
 
         private async Task LoadCustomGames()

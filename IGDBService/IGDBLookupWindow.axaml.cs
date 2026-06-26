@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -87,6 +88,7 @@ public partial class IGDBLookupWindow : Window
 
     private void UseSelectedButton_Click(object? sender, RoutedEventArgs e)
     {
+        Debug.WriteLine($"Before Close: {_currentGame?.Name}");
         if (_currentGame == null)
             return;
 
