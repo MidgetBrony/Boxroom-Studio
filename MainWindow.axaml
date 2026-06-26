@@ -1,0 +1,66 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="using:Boxroom_Studio"
+        x:Class="Boxroom_Studio.MainWindow"
+        Width="1000"
+        Height="800"
+        Title="Boxroom Studio">
+
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Toolbar -->
+        <Border Grid.Row="0"
+                Padding="10">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+
+                <Button Content="New" Click="NewGame_Click"/>
+                
+                <Button x:Name="SyncOwnedGamesButton" Content="Sync Owned__Games.json" Click="SyncGamesOwned"/>
+
+                <Button Content="Settings" Click="OpenSettings_Click"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="1">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Game List -->
+            <Border Grid.Column="0"
+                    Margin="10">
+
+                <ListBox x:Name="GamesList" SelectionChanged="GamesList_SelectionChanged"/>
+
+            </Border>
+
+            <!-- Editor -->
+            <Border Grid.Column="1"
+                    Margin="10">
+
+                <local:GameEditor x:Name="GameEditor"/>
+
+            </Border>
+
+        </Grid>
+
+        <!-- Status -->
+        <Border Grid.Row="2"
+                Padding="8">
+
+            <TextBlock x:Name="StatusText" Text="Ready"/>
+
+        </Border>
+
+    </Grid>
+
+</Window>

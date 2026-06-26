@@ -1,0 +1,52 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Boxroom_Studio.App"
+             RequestedThemeVariant="Default">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.Styles>
+        <FluentTheme />
+
+        <Style Selector="Button.Link">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="Padding" Value="0"/>
+    <Setter Property="Foreground" Value="DodgerBlue"/>
+    <Setter Property="Cursor" Value="Hand"/>
+</Style>
+
+<Style Selector="Button.Link:pointerover">
+    <Setter Property="TextBlock.TextDecorations" Value="Underline"/>
+</Style>
+    </Application.Styles>
+
+<Application.Resources>
+    <ResourceDictionary>
+
+        <ResourceDictionary.ThemeDictionaries>
+
+            <ResourceDictionary x:Key="Light">
+                <SolidColorBrush
+                    x:Key="WarningBackground"
+                    Color="#FFF3CD"/>
+
+                <SolidColorBrush
+                    x:Key="WarningForeground"
+                    Color="#664D03"/>
+            </ResourceDictionary>
+
+            <ResourceDictionary x:Key="Dark">
+                <SolidColorBrush
+                    x:Key="WarningBackground"
+                    Color="#503500"/>
+
+                <SolidColorBrush
+                    x:Key="WarningForeground"
+                    Color="White"/>
+            </ResourceDictionary>
+
+        </ResourceDictionary.ThemeDictionaries>
+
+    </ResourceDictionary>
+</Application.Resources>
+</Application>

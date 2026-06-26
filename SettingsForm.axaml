@@ -1,0 +1,215 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Boxroom_Studio.SettingsForm"
+        Width="700"
+        Height="800"
+        Title="Boxroom Studio - Settings">
+
+    <ScrollViewer>
+        
+        <StackPanel Margin="16"
+                    Spacing="16">
+            <Border
+    x:Name="FirstRunInfoPanel"
+    IsVisible="False"
+    Margin="0,0,0,12"
+    Padding="12"
+    Background="{DynamicResource WarningBackground}"
+    BorderBrush="{DynamicResource WarningBorder}"
+    BorderThickness="1">
+
+    <StackPanel Spacing="8">
+
+        <TextBlock
+            FontWeight="Bold"
+            Foreground="{DynamicResource WarningForeground}"
+            Text="👋 Welcome to Boxroom Studio!" />
+
+        <TextBlock
+            TextWrapping="Wrap"
+            Foreground="{DynamicResource WarningForeground}"
+            Text="Before using Boxroom Studio, you'll need to configure a few settings." />
+
+        <StackPanel Margin="12,0,0,0">
+
+            <TextBlock
+                Foreground="{DynamicResource WarningForeground}"
+                Text="• Select your BOXROOM steam_cache_v2 folder." />
+
+            <TextBlock
+                Foreground="{DynamicResource WarningForeground}"
+                Text="• Create an IGDB API application to enable automatic game metadata." />
+
+            <TextBlock
+                Foreground="{DynamicResource WarningForeground}"
+                Text="• Create a SteamGridDB API key to download cover artwork." />
+
+        </StackPanel>
+
+        <TextBlock
+            TextWrapping="Wrap"
+            Foreground="{DynamicResource WarningForeground}"
+            FontStyle="Italic"
+            Text="All API keys are free to obtain and only need to be configured once." />
+
+    </StackPanel>
+
+</Border>
+            <!-- ========================= -->
+            <!-- BOXROOM -->
+            <!-- ========================= -->
+
+            <GroupBox Header="BOXROOM">
+
+                <StackPanel Margin="10"
+                            Spacing="8">
+
+                    <TextBlock Text="BOXROOM Cache Folder"/>
+
+                    <Grid ColumnDefinitions="*,Auto"
+                          ColumnSpacing="8">
+
+                        <TextBox x:Name="CachePathBox"
+                                 Grid.Column="0"/>
+
+                        <Button Grid.Column="1"
+                                Width="80"
+                                Content="Browse"
+                                Click="BrowseCacheButton_Click"/>
+
+                    </Grid>
+
+                    <TextBlock
+                        TextWrapping="Wrap"
+                        Foreground="Gray"
+                        Text="Select the steam_cache_v2 folder used by BOXROOM."/>
+
+                </StackPanel>
+
+            </GroupBox>
+
+            <!-- ========================= -->
+            <!-- IGDB -->
+            <!-- ========================= -->
+
+            <GroupBox Header="IGDB">
+
+                <StackPanel Margin="10"
+                            Spacing="8">
+
+                    <TextBlock Text="Client ID"/>
+
+                    <TextBox x:Name="IGDBClientIdBox"/>
+
+                    <TextBlock Text="Client Secret"/>
+
+                    <TextBox x:Name="IGDBClientSecretBox"
+                             PasswordChar="●"/>
+
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="8">
+
+                        <Button
+                            Content="Test Connection"
+                            Click="TestIGDBButton_Click"/>
+
+                        <Button
+                            Classes="Link"
+                            Content="How do I get these?"
+                            Click="IGDBHelpButton_Click"/>
+
+                    </StackPanel>
+
+                    <TextBlock
+                        x:Name="IGDBStatusText"
+                        Foreground="Gray"
+                        Text="Not tested."/>
+
+                </StackPanel>
+
+            </GroupBox>
+
+            <!-- ========================= -->
+            <!-- SteamGridDB -->
+            <!-- ========================= -->
+
+            <GroupBox Header="SteamGridDB">
+
+                <StackPanel Margin="10"
+                            Spacing="8">
+
+                    <TextBlock Text="API Key"/>
+
+                    <TextBox x:Name="SteamGridApiKeyBox"
+                             PasswordChar="●"/>
+
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="8">
+
+                        <Button
+                            Content="Test Connection"
+                            Click="TestSteamGridButton_Click"/>
+
+                        <Button
+                            Classes="Link"
+                            Content="How do I get an API key?"
+                            Click="SteamGridHelpButton_Click"/>
+
+                    </StackPanel>
+
+                    <TextBlock
+                        x:Name="SteamGridStatusText"
+                        Foreground="Gray"
+                        Text="Not tested."/>
+
+                </StackPanel>
+
+            </GroupBox>
+
+            <!-- ========================= -->
+            <!-- Appearance -->
+            <!-- ========================= -->
+
+            <GroupBox Header="Appearance">
+
+                <StackPanel Margin="10"
+                            Spacing="8">
+
+                    <TextBlock Text="Theme"/>
+
+                    <ComboBox x:Name="ThemeBox"
+                              SelectedIndex="0">
+
+                        <ComboBoxItem Content="Dark"/>
+                        <ComboBoxItem Content="Light"/>
+
+                    </ComboBox>
+
+                </StackPanel>
+
+            </GroupBox>
+
+            <!-- ========================= -->
+            <!-- Buttons -->
+            <!-- ========================= -->
+
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Spacing="8">
+
+                <Button Width="100"
+                        Content="Cancel"
+                        Click="CancelButton_Click"/>
+
+                <Button Width="100"
+                        IsDefault="True"
+                        Content="Save"
+                        Click="SaveButton_Click"/>
+
+            </StackPanel>
+
+        </StackPanel>
+
+    </ScrollViewer>
+
+</Window>
