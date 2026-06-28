@@ -21,8 +21,26 @@
 
                 <Button Content="New" Click="NewGame_Click"/>
                 
-                <Button x:Name="SyncOwnedGamesButton" Content="Sync Owned__Games.json" Click="SyncGamesOwned"/>
+                <Button x:Name="SyncOwnedGamesButton" Content="Sync Owned__Games.json" Click="SyncGamesOwned">
+                <ToolTip.Tip>
+            <StackPanel MaxWidth="350" Spacing="4">
+                        <TextBlock TextWrapping="Wrap">
+                            Scans the Boxroom cache for custom games and adds any missing
+                            entries to <Run FontWeight="Bold">owned_games.json</Run>.
+                        </TextBlock>
 
+                        <TextBlock Foreground="HotPink"
+                                   FontWeight="Bold">
+                            ⚠ Important
+                        </TextBlock>
+
+                        <TextBlock Foreground="HotPink"
+                                   TextWrapping="Wrap">
+When Boxroom refreshes your Steam library, it may recreate owned_games.json, removing custom game entries. Run this command again to restore them.
+                        </TextBlock>
+                    </StackPanel>
+                </ToolTip.Tip>
+                </Button>
                 <Button Content="Settings" Click="OpenSettings_Click"/>
             </StackPanel>
         </Border>

@@ -17,7 +17,6 @@ namespace Boxroom_Studio
         public MainWindow()
         {
             InitializeComponent();
-
             bool firstRun = SettingsManager.Load();
 
             Settings = SettingsManager.Current;
@@ -97,6 +96,7 @@ namespace Boxroom_Studio
 
         private void GamesList_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
+            GameEditor.ShowEditor();
             if (GamesList.SelectedItem is ListBoxItem item &&
                 item.Tag is CacheGame game)
             {
@@ -106,6 +106,7 @@ namespace Boxroom_Studio
 
         private void NewGame_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
+            GameEditor.ShowEditor();
             GameEditor.NewGame();
         }
 

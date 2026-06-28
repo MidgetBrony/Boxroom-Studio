@@ -1,207 +1,242 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Boxroom_Studio.GameEditor">
-<Grid RowDefinitions="20,*,Auto">
-    <TextBlock x:Name="EditorTitle"
-               Grid.Row="0"
-               Margin="12,0,0,0"
-               FontSize="16"
-               FontWeight="Bold"
-               Text="Cache ID:"/>
-    <TabControl Grid.Row="1">
+<Grid>
+        <!-- Empty State -->
+        <Border x:Name="EmptyState">
+            <StackPanel
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Spacing="12">
 
-        <!-- ========================= -->
-        <!-- General -->
-        <!-- ========================= -->
-        <TabItem Header="General">
+                <TextBlock
+                    FontSize="24"
+                    FontWeight="Bold"
+                    TextAlignment="Center"
+                    Text="🎮 No Game Selected"/>
+                
+                <TextBlock
+                    MaxWidth="350"
+                    TextAlignment="Center"
+                    TextWrapping="Wrap"
+                    Text="Select a game from the list to edit it."/>
 
-            <Grid Margin="12"
-                  ColumnDefinitions="260,*">
+                
+                <TextBlock
+                    MaxWidth="350"
+                    TextAlignment="Center"
+                    TextWrapping="Wrap"
+                    Text="- OR -"/>
 
-                <!-- Cover -->
-                <StackPanel Grid.Column="0" Spacing="8">
+                
+                <TextBlock TextAlignment="Center">
+                    Click <Run FontWeight="Bold">New</Run> to create a new custom game.
+                </TextBlock>
 
-                    <TextBlock Text="Cover Art"
-                               FontWeight="Bold"/>
+            </StackPanel>
+            </Border>
+    <Grid x:Name="EditorRoot" RowDefinitions="20,*,Auto" IsVisible="False">
+        <TextBlock x:Name="EditorTitle"
+                    Grid.Row="0"
+                    Margin="12,0,0,0"
+                    FontSize="16"
+                    FontWeight="Bold"
+                    Text="Cache ID:"/>
+        <TabControl Grid.Row="1">
 
-                    <Border Width="220"
-                            Height="330"
-                            BorderBrush="Gray"
-                            BorderThickness="1">
+            <!-- ========================= -->
+            <!-- General -->
+            <!-- ========================= -->
+            <TabItem Header="General">
 
-                        <Image x:Name="CoverImage"
-                               Stretch="UniformToFill"/>
+                <Grid Margin="12"
+                        ColumnDefinitions="260,*">
 
-                    </Border>
+                    <!-- Cover -->
+                    <StackPanel Grid.Column="0" Spacing="8">
+
+                        <TextBlock Text="Cover Art"
+                                    FontWeight="Bold"/>
+
+                        <Border Width="220"
+                                Height="330"
+                                BorderBrush="Gray"
+                                BorderThickness="1">
+
+                            <Image x:Name="CoverImage"
+                                    Stretch="UniformToFill"/>
+
+                        </Border>
                     
-                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-                        <Button x:Name="BrowseCoverButton"
-                                Grid.Column="0"
-                                Content="Browse Cover"
-                                Click="BrowseCoverButton_Click"
-                                />
-                        <Button x:Name="SteamGridDBButton"
-                                Grid.Column="1"
-                                Content="SteamGridDB" Click="SteamGridDBButton_Click"/>
-                    </Grid>
-                </StackPanel>
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                            <Button x:Name="BrowseCoverButton"
+                                    Grid.Column="0"
+                                    Content="Browse Cover"
+                                    Click="BrowseCoverButton_Click"
+                                    />
+                            <Button x:Name="SteamGridDBButton"
+                                    Grid.Column="1"
+                                    Content="SteamGridDB" Click="SteamGridDBButton_Click"/>
+                        </Grid>
+                    </StackPanel>
 
-                <!-- Metadata -->
-                <StackPanel Grid.Column="1"
-                            Margin="20,0,0,0"
-                            Spacing="8">
+                    <!-- Metadata -->
+                    <StackPanel Grid.Column="1"
+                                Margin="20,0,0,0"
+                                Spacing="8">
 
-                    <TextBlock Text="Game Details"
-                               FontSize="20"
-                               FontWeight="Bold"/>
+                        <TextBlock Text="Game Details"
+                                    FontSize="20"
+                                    FontWeight="Bold"/>
 
-                    <TextBlock Text="Name"/>
-                    <TextBox x:Name="NameBox"/>
+                        <TextBlock Text="Name"/>
+                        <TextBox x:Name="NameBox"/>
 
-                    <TextBlock Text="Release Date"/>
+                        <TextBlock Text="Release Date"/>
 
-                    <DatePicker x:Name="ReleaseDatePicker"/>
+                        <DatePicker x:Name="ReleaseDatePicker"/>
 
-                    <TextBlock Text="Developer"/>
-                    <TextBox x:Name="DeveloperBox"/>
+                        <TextBlock Text="Developer"/>
+                        <TextBox x:Name="DeveloperBox"/>
 
-                    <TextBlock Text="Publisher"/>
-                    <TextBox x:Name="PublisherBox"/>
+                        <TextBlock Text="Publisher"/>
+                        <TextBox x:Name="PublisherBox"/>
 
-                    <TextBlock Text="Genre"/>
-                    <TextBox x:Name="GenreBox"/>
+                        <TextBlock Text="Genre"/>
+                        <TextBox x:Name="GenreBox"/>
 
-                    <TextBlock Text="Description"/>
+                        <TextBlock Text="Description"/>
 
-                    <TextBox x:Name="DescriptionBox"
-                             Height="180"
-                             AcceptsReturn="True"
-                             TextWrapping="Wrap"/>
-
-                </StackPanel>
-
-            </Grid>
-
-        </TabItem>
-
-        <!-- ========================= -->
-        <!-- Launch -->
-        <!-- ========================= -->
-        <TabItem Header="Launch Settings">
-
-            <StackPanel Margin="12"
-                        Spacing="8">
-
-                    <TextBlock Text="Executable"/>
-
-                    <Grid ColumnDefinitions="*,Auto"
-                          ColumnSpacing="8">
-
-                        <TextBox x:Name="ExecutableBox"
-                                 Grid.Column="0"/>
-
-                        <Button x:Name="BrowseExeButton"
-                                Grid.Column="1"
-                                Width="80"
-                                Content="Browse" Click="BrowseExeButton_Click"/>
-
-                    </Grid>
-
-                    <TextBlock Text="Working Directory"/>
-
-                    <Grid ColumnDefinitions="*,Auto"
-                          ColumnSpacing="8">
-
-                        <TextBox x:Name="WorkingDirectoryBox"
-                                 Grid.Column="0"/>
-
-                        <Button x:Name="BrowseWorkingDirButton"
-                                Grid.Column="1"
-                                Width="80"
-                                Content="Browse"
-                                Click="BrowseWorkingDirButton_Click"
-                                />
-
-                    </Grid>
-
-                    <TextBlock Text="Arguments"/>
-
-                    <TextBox x:Name="ArgumentsBox"/>
-
-                <CheckBox x:Name="UseShellExecuteBox"
-                          Content="Use Shell Execute"/>
-                    <Border
-                        Margin="0,0,0,12"
-                        Padding="10"
-                        Background="{DynamicResource WarningBackground}"
-                        BorderBrush="Goldenrod"
-                        BorderThickness="1">
-
-                    <StackPanel Spacing="6">
-
-                        <TextBlock
-                            FontWeight="Bold"
-                            Foreground="{DynamicResource WarningForeground}"
-                            Text="⚠ Launch Settings require Boxroom-Plus."/>
-
-                        <TextBlock
-                            Foreground="{DynamicResource WarningForeground}"
-                            TextWrapping="Wrap"
-                            Text="Custom launch settings are ignored by the base version of BOXROOM."/>
-
-                        <Button
-                            HorizontalAlignment="Left"
-                            Classes="Link"
-                            Content="Open Boxroom-Plus on GitHub"
-                            Click="BoxroomPlusLink_Click"/>
+                        <TextBox x:Name="DescriptionBox"
+                                    Height="180"
+                                    AcceptsReturn="True"
+                                    TextWrapping="Wrap"/>
 
                     </StackPanel>
 
-                    </Border>
+                </Grid>
 
-            </StackPanel>
+            </TabItem>
 
-        </TabItem>
+            <!-- ========================= -->
+            <!-- Launch -->
+            <!-- ========================= -->
+            <TabItem Header="Launch Settings">
 
-        <!-- ========================= -->
-        <!-- Screenshots -->
-        <!-- ========================= -->
-        <TabItem Header="Screenshots">
-
-            <Grid Margin="12"
-                  RowDefinitions="*,Auto">
-
-                <ListBox x:Name="ScreenshotsList"/>
-
-                <StackPanel Grid.Row="1"
-                            Margin="0,10,0,0"
-                            Orientation="Horizontal"
+                <StackPanel Margin="12"
                             Spacing="8">
+
+                        <TextBlock Text="Executable"/>
+
+                        <Grid ColumnDefinitions="*,Auto"
+                                ColumnSpacing="8">
+
+                            <TextBox x:Name="ExecutableBox"
+                                        Grid.Column="0"/>
+
+                            <Button x:Name="BrowseExeButton"
+                                    Grid.Column="1"
+                                    Width="80"
+                                    Content="Browse" Click="BrowseExeButton_Click"/>
+
+                        </Grid>
+
+                        <TextBlock Text="Working Directory"/>
+
+                        <Grid ColumnDefinitions="*,Auto"
+                                ColumnSpacing="8">
+
+                            <TextBox x:Name="WorkingDirectoryBox"
+                                        Grid.Column="0"/>
+
+                            <Button x:Name="BrowseWorkingDirButton"
+                                    Grid.Column="1"
+                                    Width="80"
+                                    Content="Browse"
+                                    Click="BrowseWorkingDirButton_Click"
+                                    />
+
+                        </Grid>
+
+                        <TextBlock Text="Arguments"/>
+
+                        <TextBox x:Name="ArgumentsBox"/>
+
+                    <CheckBox x:Name="UseShellExecuteBox"
+                                Content="Use Shell Execute"/>
+                        <Border
+                            Margin="0,0,0,12"
+                            Padding="10"
+                            Background="{DynamicResource WarningBackground}"
+                            BorderBrush="Goldenrod"
+                            BorderThickness="1">
+
+                        <StackPanel Spacing="6">
+
+                            <TextBlock
+                                FontWeight="Bold"
+                                Foreground="{DynamicResource WarningForeground}"
+                                Text="⚠ Launch Settings require Boxroom-Plus."/>
+
+                            <TextBlock
+                                Foreground="{DynamicResource WarningForeground}"
+                                TextWrapping="Wrap"
+                                Text="Custom launch settings are ignored by the base version of BOXROOM."/>
+
+                            <Button
+                                HorizontalAlignment="Left"
+                                Classes="Link"
+                                Content="Open Boxroom-Plus on GitHub"
+                                Click="BoxroomPlusLink_Click"/>
+
+                        </StackPanel>
+
+                        </Border>
+
                 </StackPanel>
 
+            </TabItem>
+
+            <!-- ========================= -->
+            <!-- Screenshots -->
+            <!-- ========================= -->
+            <TabItem Header="Screenshots">
+
+                <Grid Margin="12"
+                        RowDefinitions="*,Auto">
+
+                    <ListBox x:Name="ScreenshotsList"/>
+
+                    <StackPanel Grid.Row="1"
+                                Margin="0,10,0,0"
+                                Orientation="Horizontal"
+                                Spacing="8">
+                    </StackPanel>
+
+                </Grid>
+
+            </TabItem>
+
+        </TabControl>
+            <Border Grid.Row="2" Padding="10">
+
+            <Grid ColumnDefinitions="*,Auto,Auto"
+                    ColumnSpacing="8">
+
+                <TextBlock x:Name="EditorStatus"
+                            VerticalAlignment="Center"
+                            Text=""/>
+
+                <Button x:Name="SearchIgdbButton"
+                        Grid.Column="1"
+                        Content="Search IGDB" Click="SearchIgdbButton_Click"/>
+
+                <Button x:Name="SaveButton"
+                        Grid.Column="2"
+                        Content="Save" Click="SaveButton_Click"/>
+
             </Grid>
-
-        </TabItem>
-
-    </TabControl>
-        <Border Grid.Row="2" Padding="10">
-
-        <Grid ColumnDefinitions="*,Auto,Auto"
-              ColumnSpacing="8">
-
-            <TextBlock x:Name="EditorStatus"
-                       VerticalAlignment="Center"
-                       Text=""/>
-
-            <Button x:Name="SearchIgdbButton"
-                    Grid.Column="1"
-                    Content="Search IGDB" Click="SearchIgdbButton_Click"/>
-
-            <Button x:Name="SaveButton"
-                    Grid.Column="2"
-                    Content="Save" Click="SaveButton_Click"/>
-
-        </Grid>
-        </Border>
-</Grid>
+            </Border>
+    </Grid>
+    </Grid>
 </UserControl>

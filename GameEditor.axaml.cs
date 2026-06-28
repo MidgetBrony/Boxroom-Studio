@@ -22,7 +22,17 @@ public partial class GameEditor : UserControl
         InitializeComponent();
     }
 
+    public void ShowEditor()
+    {
+        EmptyState.IsVisible = false;
+        EditorRoot.IsVisible = true;
+    }
 
+    public void ShowEmpty()
+    {
+        EmptyState.IsVisible = true;
+        EditorRoot.IsVisible = false;
+    }
     public void LoadGame(CacheGame game)
     {
         _currentGame = game;
