@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -47,62 +48,74 @@ namespace Boxroom_Studio
 
             foreach (string dir in Directory.EnumerateDirectories(SettingsManager.Current.BoxroomCachePath))
             {
-                string metaPath = Path.Combine(dir, "meta.json");
-                if (!File.Exists(metaPath))
-                    continue;
+                Debug.WriteLine(dir);
 
-                SteamMeta? meta = JsonSerializer.Deserialize<SteamMeta>(
-                    await File.ReadAllTextAsync(metaPath));
-
-                if (meta == null)
-                    continue;
-
-                MetaHelper? helper = null;
-                string helperPath = Path.Combine(dir, "meta.helper.json");
-
-                if (File.Exists(helperPath))
+                try
                 {
-                    helper = JsonSerializer.Deserialize<MetaHelper>(
-                        await File.ReadAllTextAsync(helperPath));
+
+                    Debug.WriteLine("Reading meta.json");
+                    string metaPath = Path.Combine(dir, "meta.json");
+                    if (!File.Exists(metaPath))
+                        continue;
+
+                    SteamMeta? meta = JsonSerializer.Deserialize<SteamMeta>(
+                        await File.ReadAllTextAsync(metaPath));
+
+                    if (meta == null)
+                        continue;
+
+                    MetaHelper? helper = null;
+                    string helperPath = Path.Combine(dir, "meta.helper.json");
+
+                    Debug.WriteLine($"Helper: {helper?.Type ?? "NULL"}");
+                    if (File.Exists(helperPath))
+                    {
+                        helper = JsonSerializer.Deserialize<MetaHelper>(
+                            await File.ReadAllTextAsync(helperPath));
+                    }
+
+                    if (customOnly && helper?.Type != "Custom")
+                        continue;
+
+                    LaunchInfo? launch = null;
+                    string launchPath = Path.Combine(dir, "launch.json");
+                    Debug.WriteLine($"Launch: {(launch != null)}");
+                    if (File.Exists(launchPath))
+                    {
+                        launch = JsonSerializer.Deserialize<LaunchInfo>(
+                            await File.ReadAllTextAsync(launchPath));
+                    }
+
+                    CacheGame game = new()
+                    {
+                        AppId = int.Parse(Path.GetFileName(dir)),
+                        Folder = dir,
+                        Meta = meta,
+                        Helper = helper,
+                        Launch = launch
+                    };
+
+                    // Cover
+                    string boxart = Path.Combine(dir, "boxart.jpg");
+                    string cover = Path.Combine(dir, "cover.jpg");
+
+                    if (File.Exists(boxart))
+                        game.CoverPath = boxart;
+                    else if (File.Exists(cover))
+                        game.CoverPath = cover;
+
+                    // Screenshots
+                    foreach (string image in Directory.EnumerateFiles(dir, "screen_*.jpg"))
+                    {
+                        game.Screenshots.Add(image);
+                    }
+                    Debug.WriteLine($"Adding {meta.Name}");
+                    games.Add(game);
                 }
-
-                if (customOnly && helper?.Type != "Custom")
-                    continue;
-
-                LaunchInfo? launch = null;
-                string launchPath = Path.Combine(dir, "launch.json");
-
-                if (File.Exists(launchPath))
+                catch (Exception ex)
                 {
-                    launch = JsonSerializer.Deserialize<LaunchInfo>(
-                        await File.ReadAllTextAsync(launchPath));
+                    Debug.WriteLine($"Error loading game from directory '{dir}': {ex.Message}");
                 }
-
-                CacheGame game = new()
-                {
-                    AppId = int.Parse(Path.GetFileName(dir)),
-                    Folder = dir,
-                    Meta = meta,
-                    Helper = helper,
-                    Launch = launch
-                };
-
-                // Cover
-                string boxart = Path.Combine(dir, "boxart.jpg");
-                string cover = Path.Combine(dir, "cover.jpg");
-
-                if (File.Exists(boxart))
-                    game.CoverPath = boxart;
-                else if (File.Exists(cover))
-                    game.CoverPath = cover;
-
-                // Screenshots
-                foreach (string image in Directory.EnumerateFiles(dir, "screen_*.jpg"))
-                {
-                    game.Screenshots.Add(image);
-                }
-
-                games.Add(game);
             }
 
             return games;
