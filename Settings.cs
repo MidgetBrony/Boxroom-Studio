@@ -32,6 +32,8 @@ namespace Boxroom_Studio
         public int IGDBTokenExpiresIn { get; set; }
         public string SteamGridDBApiKey { get; set; } = "";
         public string Theme { get; set; } = "Dark";
+
+        public bool AutoUpdate { get; set; } = true;
     }
 
     public static class SettingsManager
@@ -84,9 +86,9 @@ namespace Boxroom_Studio
             if (string.IsNullOrWhiteSpace(Current.BoxroomCachePath))
             {
                 Current.BoxroomCachePath = GetDefaultCachePath();
-                Save();
             }
 
+            Save();
             return false;
         }
 
