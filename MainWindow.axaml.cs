@@ -1,9 +1,16 @@
+using Avalonia;
 using Avalonia.Controls;
+using NetSparkleUpdater;
+using NetSparkleUpdater;
+using NetSparkleUpdater.Enums;
+using NetSparkleUpdater.SignatureVerifiers;
+using NetSparkleUpdater.UI.Avalonia;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Boxroom_Studio
@@ -11,13 +18,15 @@ namespace Boxroom_Studio
     public partial class MainWindow : Window
     {
         public List<CacheGame> CustomGames { get; set; } = new();
-
+        string version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "Unknown";
         public Settings Settings { get; set; }
-
+        private SparkleUpdater? _sparkle;
         public MainWindow()
         {
             InitializeComponent();
             bool firstRun = SettingsManager.Load();
+
+            Title = $"Boxroom Studio v{version}";
 
             Settings = SettingsManager.Current;
 
@@ -35,9 +44,43 @@ namespace Boxroom_Studio
 
                 Debug.WriteLine("LoadCustomGames()");
                 await LoadCustomGames();
+
+
+                Debug.WriteLine("CheckForUpdates()");
+                CheckForUpdates(true);
             };
 
             GameEditor.GameSaved += GameEditor_GameSaved;
+
+
+        }
+
+        public void CheckForUpdates(bool automatic)
+        {
+            if (automatic && !SettingsManager.Current.AutoUpdate)
+                return;
+
+            try
+            {
+                if (_sparkle == null)
+                {
+                    _sparkle = new SparkleUpdater(
+                        "https://boxroom-studio.hempton.us/appcast.xml",
+                        new Ed25519Checker(
+                            SecurityMode.Strict,
+                            "7RPXVx6g4+7Y9RJaqqqaJF9F3lD5W8a50gCoGH/DAvU="))
+                    {
+                        UIFactory = new UIFactory(),
+                        RelaunchAfterUpdate = true
+                    };
+                }
+
+                _sparkle.CheckForUpdatesQuietly();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Update check failed: {ex}");
+            }
         }
 
         private void GameEditor_GameSaved(CacheGame game)

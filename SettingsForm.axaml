@@ -190,6 +190,32 @@
             </GroupBox>
 
             <!-- ========================= -->
+            <!-- Updates -->
+            <!-- ========================= -->
+
+            <GroupBox Header="Updates">
+
+                <StackPanel Margin="10"
+                            Spacing="10">
+
+                    <CheckBox x:Name="AutoUpdateBox"
+                              Content="Automatically check for updates on startup"/>
+
+                    <Button
+                        HorizontalAlignment="Left"
+                        Content="Check for Updates"
+                        Click="CheckForUpdatesButton_Click"/>
+
+                    <TextBlock
+                        Foreground="Gray"
+                        TextWrapping="Wrap"
+                        Text="Boxroom Studio checks for new releases hosted on boxroom-studio.hempton.us."/>
+
+                </StackPanel>
+
+            </GroupBox>
+
+            <!-- ========================= -->
             <!-- Buttons -->
             <!-- ========================= -->
 
@@ -207,6 +233,8 @@
                         Click="SaveButton_Click"/>
 
             </StackPanel>
+
+
 
         </StackPanel>
 

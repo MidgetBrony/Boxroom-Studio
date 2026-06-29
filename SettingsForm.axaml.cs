@@ -36,6 +36,8 @@ public partial class SettingsForm : Window
 
         SteamGridStatusText.Text = "Not tested.";
         SteamGridStatusText.Foreground = Brushes.Gray;
+
+        AutoUpdateBox.IsChecked = SettingsManager.Current.AutoUpdate;
     }
 
     private void SaveButton_Click(object? sender, RoutedEventArgs e)
@@ -55,6 +57,7 @@ public partial class SettingsForm : Window
         SettingsManager.Current.Theme =
             ThemeBox.SelectedIndex == 1 ? "Light" : "Dark";
 
+        SettingsManager.Current.AutoUpdate = AutoUpdateBox.IsChecked ?? true;
         SettingsManager.Save();
 
         Close();
@@ -138,6 +141,14 @@ public partial class SettingsForm : Window
         {
             SteamGridStatusText.Foreground = Brushes.IndianRed;
             SteamGridStatusText.Text = $"✗ {ex.Message}";
+        }
+    }
+
+    private void CheckForUpdatesButton_Click(object? sender, RoutedEventArgs e)
+    {
+        if (Owner is MainWindow window)
+        {
+            window.CheckForUpdates(false);
         }
     }
 }

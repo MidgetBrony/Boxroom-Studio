@@ -9,7 +9,7 @@
     <ApplicationIcon>BoxRoom Studio.ico</ApplicationIcon>
 
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-
+	<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <!-- Version -->
     <Version>1.1.0</Version>
     <AssemblyVersion>1.1.0.0</AssemblyVersion>
@@ -22,6 +22,13 @@
     <Copyright>© 2026 MidgetBrony</Copyright>
 
   </PropertyGroup>
+
+  <ItemGroup>
+    <AvaloniaXaml Remove="Release\**" />
+    <Compile Remove="Release\**" />
+    <EmbeddedResource Remove="Release\**" />
+    <None Remove="Release\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <Content Include="BoxRoom Studio.ico" />
