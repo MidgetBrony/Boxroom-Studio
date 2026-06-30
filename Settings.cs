@@ -32,7 +32,7 @@ namespace Boxroom_Studio
         public int IGDBTokenExpiresIn { get; set; }
         public string SteamGridDBApiKey { get; set; } = "";
         public string Theme { get; set; } = "Dark";
-
+        public bool CustomOnly { get; set; } = false;
         public bool AutoUpdate { get; set; } = true;
     }
 

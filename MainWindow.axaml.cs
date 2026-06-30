@@ -119,9 +119,8 @@ namespace Boxroom_Studio
                 return;
             }
 
-            CustomGames = await new CacheRespitory().LoadGamesAsync(true);
 
-            Debug.WriteLine($"Loaded {CustomGames.Count} custom games.");
+            CustomGames = await new CacheRespitory().LoadGamesAsync(SettingsManager.Current.CustomOnly);
 
             GamesList.Items.Clear();
 
@@ -134,7 +133,7 @@ namespace Boxroom_Studio
                 });
             }
 
-            StatusText.Text = $"Loaded {CustomGames.Count} custom games.";
+            StatusText.Text = $"Loaded {CustomGames.Count} games.";
         }
 
         private void GamesList_SelectionChanged(object? sender, SelectionChangedEventArgs e)

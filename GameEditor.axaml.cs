@@ -157,6 +157,10 @@ public partial class GameEditor : UserControl
             return;
 
 
+        _currentGame.Helper ??= new MetaHelper
+        {
+            Type = "Steam"
+        };
         // Save helper metadata
         _currentGame.Helper.IGDBId = selectedGame.Id;
         _currentGame.Helper.SteamGridDBId = null;
