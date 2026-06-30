@@ -167,10 +167,10 @@
             </GroupBox>
 
             <!-- ========================= -->
-            <!-- Appearance -->
+            <!-- General -->
             <!-- ========================= -->
 
-            <GroupBox Header="Appearance">
+            <GroupBox Header="General">
 
                 <StackPanel Margin="10"
                             Spacing="8">
@@ -184,6 +184,11 @@
                         <ComboBoxItem Content="Light"/>
 
                     </ComboBox>
+
+                    <Separator/>
+
+                    <CheckBox x:Name="ShowSteamGamesCheckBox"
+                              Content="Show Steam games in editor"/>
 
                 </StackPanel>
 

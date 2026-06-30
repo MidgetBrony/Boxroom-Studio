@@ -38,6 +38,7 @@ public partial class SettingsForm : Window
         SteamGridStatusText.Foreground = Brushes.Gray;
 
         AutoUpdateBox.IsChecked = SettingsManager.Current.AutoUpdate;
+        ShowSteamGamesCheckBox.IsChecked = !SettingsManager.Current.CustomOnly;
     }
 
     private void SaveButton_Click(object? sender, RoutedEventArgs e)
@@ -58,6 +59,10 @@ public partial class SettingsForm : Window
             ThemeBox.SelectedIndex == 1 ? "Light" : "Dark";
 
         SettingsManager.Current.AutoUpdate = AutoUpdateBox.IsChecked ?? true;
+        SettingsManager.Current.CustomOnly =
+    !(ShowSteamGamesCheckBox.IsChecked ?? false);
+
+
         SettingsManager.Save();
 
         Close();

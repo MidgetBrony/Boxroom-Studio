@@ -182,6 +182,8 @@ namespace Boxroom_Studio
 
             // Apply any theme change immediately.
             ThemeManager.Apply(SettingsManager.Current.Theme);
+            await LoadCustomGames();
+
         }
     }
 }
