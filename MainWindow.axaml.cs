@@ -1,10 +1,5 @@
 using Avalonia;
 using Avalonia.Controls;
-using NetSparkleUpdater;
-using NetSparkleUpdater;
-using NetSparkleUpdater.Enums;
-using NetSparkleUpdater.SignatureVerifiers;
-using NetSparkleUpdater.UI.Avalonia;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -20,7 +15,7 @@ namespace Boxroom_Studio
         public List<CacheGame> CustomGames { get; set; } = new();
         string version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion ?? "Unknown";
         public Settings Settings { get; set; }
-        private SparkleUpdater? _sparkle;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -62,20 +57,25 @@ namespace Boxroom_Studio
 
             try
             {
-                if (_sparkle == null)
+                string updater = Path.Combine(
+                    AppContext.BaseDirectory,
+                    OperatingSystem.IsWindows()
+                        ? "Boxroom-Studio-Updater.exe"
+                        : "Boxroom-Studio-Updater");
+
+                if (!File.Exists(updater))
                 {
-                    _sparkle = new SparkleUpdater(
-                        "https://boxroom-studio.hempton.us/appcast.xml",
-                        new Ed25519Checker(
-                            SecurityMode.Strict,
-                            "7RPXVx6g4+7Y9RJaqqqaJF9F3lD5W8a50gCoGH/DAvU="))
-                    {
-                        UIFactory = new UIFactory(),
-                        RelaunchAfterUpdate = true
-                    };
+                    Debug.WriteLine("Updater not found.");
+                    return;
                 }
 
-                _sparkle.CheckForUpdatesQuietly();
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = updater,
+                    Arguments = Process.GetCurrentProcess().Id.ToString(),
+                    WorkingDirectory = AppContext.BaseDirectory,
+                    UseShellExecute = true
+                });
             }
             catch (Exception ex)
             {
