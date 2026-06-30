@@ -52,9 +52,18 @@ namespace Boxroom_Studio
 
                 try
                 {
-
                     Debug.WriteLine("Reading meta.json");
+
                     string metaPath = Path.Combine(dir, "meta.json");
+                    string backupPath = Path.Combine(dir, "meta.backup.json");
+
+                    // Recover metadata if an older BOXROOM version deleted it.
+                    if (!File.Exists(metaPath) && File.Exists(backupPath))
+                    {
+                        Debug.WriteLine($"Restoring meta.json from backup: {Path.GetFileName(dir)}");
+                        File.Copy(backupPath, metaPath);
+                    }
+
                     if (!File.Exists(metaPath))
                         continue;
 
@@ -109,6 +118,7 @@ namespace Boxroom_Studio
                     {
                         game.Screenshots.Add(image);
                     }
+
                     Debug.WriteLine($"Adding {meta.Name}");
                     games.Add(game);
                 }
@@ -140,9 +150,19 @@ namespace Boxroom_Studio
             // Keep AppId in sync
             game.Meta.AppId = game.AppId;
 
+            string metaPath = Path.Combine(game.Folder, CacheFiles.Meta);
+            string metaBackupPath = Path.Combine(game.Folder, "meta.backup.json");
+
+            // Backup existing metadata before overwriting.
+            // Used to recover from older BOXROOM versions that may delete meta.json.
+            if (File.Exists(metaPath))
+            {
+                File.Copy(metaPath, metaBackupPath, overwrite: true);
+            }
+
             // meta.json
             await File.WriteAllTextAsync(
-                Path.Combine(game.Folder, CacheFiles.Meta),
+                metaPath,
                 JsonSerializer.Serialize(game.Meta, JsonOptions));
 
             // meta.helper.json
