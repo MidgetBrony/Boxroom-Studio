@@ -1,4 +1,4 @@
 <Solution>
-  <Project Path="../Boxroom-Studio-Updater/Boxroom-Studio-Updater.csproj" Id="b3d8fce6-d838-4078-942a-ea6df798903c" />
+  <Project Path="Boxroom-Studio-Updater/Boxroom-Studio-Updater.csproj" Id="b3d8fce6-d838-4078-942a-ea6df798903c" />
   <Project Path="Boxroom Studio.csproj" />
 </Solution>

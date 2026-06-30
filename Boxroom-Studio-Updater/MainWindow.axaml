@@ -1,0 +1,83 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        d:DesignWidth="500"
+        d:DesignHeight="600"
+        x:Class="Boxroom_Studio_Updater.MainWindow"
+        Title="Boxroom Studio Updater"
+        Width="500"
+        Height="600"
+        CanResize="False"
+        CanMaximize="True"
+        CanMinimize="False">
+
+    <Grid Margin="15"
+          RowDefinitions="Auto,Auto,*,Auto,Auto,Auto">
+
+        <!-- Title -->
+        <TextBlock Grid.Row="0"
+                   x:Name="TitleText"
+                   Text="Boxroom Studio Update"
+                   FontSize="22"
+                   FontWeight="Bold"
+                   Margin="0,0,0,10"/>
+
+        <!-- Version -->
+        <TextBlock Grid.Row="1"
+                   x:Name="VersionText"
+                   Text="Checking current version..."
+                   Margin="0,0,0,10"/>
+
+        <!-- Release Notes -->
+        <GroupBox Grid.Row="2"
+                  Header="Release Notes"
+                  Margin="0,0,0,10">
+
+            <ScrollViewer>
+                <TextBlock x:Name="ReleaseNotes"
+                           Text="Loading release notes..."
+                           TextWrapping="Wrap"
+                           TextAlignment="Left"
+                           Margin="5"/>
+            </ScrollViewer>
+
+        </GroupBox>
+
+        <!-- Status -->
+        <TextBlock Grid.Row="3"
+                   x:Name="StatusText"
+                   Text="Checking for updates..."
+                   Margin="0,0,0,5"/>
+
+        <!-- Progress -->
+        <ProgressBar Grid.Row="4"
+                     x:Name="ProgressBar"
+                     Minimum="0"
+                     Maximum="100"
+                     Height="18"
+                     Margin="0,0,0,10"/>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="5"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="10">
+
+            <Button x:Name="CancelButton"
+                    Width="150"
+                    Content="Cancel" Click="CancelButton_Click"/>
+
+            <Button x:Name="UpdateButton"
+                    Width="150"
+                    Content="Update"
+                    IsEnabled="False"
+                    Click="UpdateButton_Click"
+                    />
+
+        </StackPanel>
+
+    </Grid>
+
+</Window>
