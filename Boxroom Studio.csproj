@@ -24,9 +24,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <AvaloniaXaml Remove="Boxroom-Studio-Updater\**" />
     <AvaloniaXaml Remove="Release\**" />
+    <Compile Remove="Boxroom-Studio-Updater\**" />
     <Compile Remove="Release\**" />
+    <EmbeddedResource Remove="Boxroom-Studio-Updater\**" />
     <EmbeddedResource Remove="Release\**" />
+    <None Remove="Boxroom-Studio-Updater\**" />
     <None Remove="Release\**" />
   </ItemGroup>
 
