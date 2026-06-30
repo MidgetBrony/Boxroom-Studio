@@ -13,10 +13,10 @@ namespace Boxroom_Studio
     public class CacheRespitory
     {
 
+        private static int _startingId = 900000000;
+
         public int GetNextCustomAppId()
         {
-            const int StartingId = 900000000;
-
             HashSet<int> usedIds = new();
 
             if (Directory.Exists(SettingsManager.Current.BoxroomCachePath))
@@ -32,7 +32,7 @@ namespace Boxroom_Studio
                 }
             }
 
-            int nextId = StartingId;
+            int nextId = _startingId;
 
             while (usedIds.Contains(nextId))
             {
@@ -237,8 +237,8 @@ namespace Boxroom_Studio
                 if (!int.TryParse(folderName, out int appId))
                     continue;
 
-                // Custom AppIds start at 900000000
-                if (appId < 900000000)
+                // Custom AppIds start at _startingId
+                if (appId < _startingId)
                     continue;
 
                 if (existingIds.Add(appId))
