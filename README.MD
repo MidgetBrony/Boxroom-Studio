@@ -43,6 +43,28 @@ On first launch you'll be asked to configure:
 -   Theme
 
 The application also lets you test both API connections.
+------------------------------------------------------------------------
+
+## Linux Notes
+
+On some Linux desktop environments (such as KDE Plasma), the updater may
+fail to launch the first time with an error similar to:
+
+> "For security reasons, launching executables is not allowed in this context."
+
+This is caused by Linux requiring newly downloaded executables to be
+trusted before another application can launch them.
+
+**To resolve this:**
+
+1. Run `boxroom-studio-updater` manually once.
+2. If prompted, mark the executable as **Trusted**.
+3. Close the updater.
+
+After the initial trust prompt, automatic updates should work normally.
+
+If you continue to have issues, try launching the updater directly from a
+terminal to view any additional error messages.
 
 ------------------------------------------------------------------------
 
