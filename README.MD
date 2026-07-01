@@ -119,17 +119,38 @@ Supports downloading screenshots directly from IGDB.
 
 ## Linux Notes
 
+### Updater
+
 On some Linux desktop environments (such as KDE Plasma), the updater may
 fail to launch the first time with an error similar to:
 
 > "For security reasons, launching executables is not allowed in this context."
 
-This is a Linux security feature.
+This is caused by the desktop environment marking the downloaded updater
+as untrusted.
 
 Simply launch **boxroom-studio-updater** manually once and, if prompted,
 mark it as **Trusted**.
 
 After the initial launch, automatic updates will work normally.
+
+### Launching Games
+
+When using **BOXROOM** through **Proton**, launching native Linux
+executables directly from Boxroom Plus may not work, as Proton does not
+always forward arbitrary process launches to the Linux host.
+
+If you wish to launch native Linux applications (such as RetroArch,
+Heroic, Lutris, or custom scripts), the recommended workaround is to:
+
+1. Add the application to Steam as a **Non-Steam Game**.
+2. Create a desktop shortcut from Steam.
+3. Open the generated `.desktop` file in a text editor.
+4. Copy the generated launch command into `launch.json`.
+
+Steam will then handle launching the native application correctly.
+
+Native Linux support may improve in the future.
 
 ------------------------------------------------------------------------
 
