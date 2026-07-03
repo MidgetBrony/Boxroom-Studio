@@ -38,10 +38,12 @@ namespace Boxroom_Studio
                 }
 
                 Debug.WriteLine("LoadCustomGames()");
+                Logger.Info("Loading custom games...");
                 await LoadCustomGames();
 
 
                 Debug.WriteLine("CheckForUpdates()");
+                Logger.Info("Checking for updates...");
                 CheckForUpdates(true);
             };
 
@@ -64,6 +66,7 @@ namespace Boxroom_Studio
             CustomGames.RemoveAll(g => g.AppId == game.AppId);
 
             StatusText.Text = $"Deleted {game.Meta.Name}";
+            Logger.Info($"Deleted {game.Meta.Name}");
         }
 
         public void CheckForUpdates(bool automatic)
@@ -82,6 +85,7 @@ namespace Boxroom_Studio
                 if (!File.Exists(updater))
                 {
                     Debug.WriteLine("Updater not found.");
+                    Logger.Warning("Updater not found.");
                     return;
                 }
 
@@ -96,6 +100,7 @@ namespace Boxroom_Studio
             catch (Exception ex)
             {
                 Debug.WriteLine($"Update check failed: {ex}");
+                Logger.Error(ex);
             }
         }
 
@@ -129,6 +134,7 @@ namespace Boxroom_Studio
             if (!Directory.Exists(cachePath))
             {
                 Debug.WriteLine($"Cache path does not exist: {cachePath}");
+                Logger.Warning($"Cache path does not exist: {cachePath}");
 
                 StatusText.Text = "BOXROOM cache folder not found.";
 

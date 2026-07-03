@@ -160,6 +160,7 @@ public partial class GameEditor : UserControl
         if (lookup.SelectedGame == null)
             return;
 
+        Logger.Info($"Selected IGDB game: {lookup.SelectedGame.Name}");
         await ApplyIGDBGame(lookup.SelectedGame);
     }
 

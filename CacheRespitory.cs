@@ -53,12 +53,14 @@ namespace Boxroom_Studio
                 try
                 {
                     Debug.WriteLine("Reading meta.json");
+                    Logger.Log($"Reading meta.json from {dir}");
 
                     string folderName = Path.GetFileName(dir);
 
                     if (!int.TryParse(folderName, out int appId))
                     {
                         Debug.WriteLine($"Skipping non-game folder: {folderName}");
+                        Logger.Warning($"Skipping non-game folder: {folderName}");
                         continue;
                     }
 
@@ -69,6 +71,7 @@ namespace Boxroom_Studio
                     if (!File.Exists(metaPath) && File.Exists(backupPath))
                     {
                         Debug.WriteLine($"Restoring meta.json from backup: {folderName}");
+                        Logger.Info($"Restoring meta.json from backup: {folderName}");
                         File.Copy(backupPath, metaPath);
                     }
 
@@ -85,6 +88,7 @@ namespace Boxroom_Studio
                     catch (Exception ex)
                     {
                         Debug.WriteLine($"Invalid meta.json in '{folderName}': {ex.Message}");
+                        Logger.Error(ex);
                         continue;
                     }
 
@@ -110,6 +114,7 @@ namespace Boxroom_Studio
                         catch (Exception ex)
                         {
                             Debug.WriteLine($"Invalid helper file in '{folderName}': {ex.Message}");
+                            Logger.Error(ex);
                         }
                     }
 
@@ -136,6 +141,7 @@ namespace Boxroom_Studio
                         catch (Exception ex)
                         {
                             Debug.WriteLine($"Invalid launch.json in '{folderName}': {ex.Message}");
+                            Logger.Error(ex);
                         }
                     }
 
@@ -177,6 +183,7 @@ namespace Boxroom_Studio
                 catch (Exception ex)
                 {
                     Debug.WriteLine($"Error loading game from directory '{dir}': {ex}");
+                    Logger.Error(ex);
                 }
             }
 
