@@ -54,57 +54,106 @@ namespace Boxroom_Studio
                 {
                     Debug.WriteLine("Reading meta.json");
 
+                    string folderName = Path.GetFileName(dir);
+
+                    if (!int.TryParse(folderName, out int appId))
+                    {
+                        Debug.WriteLine($"Skipping non-game folder: {folderName}");
+                        continue;
+                    }
+
                     string metaPath = Path.Combine(dir, "meta.json");
                     string backupPath = Path.Combine(dir, "meta.backup.json");
 
                     // Recover metadata if an older BOXROOM version deleted it.
                     if (!File.Exists(metaPath) && File.Exists(backupPath))
                     {
-                        Debug.WriteLine($"Restoring meta.json from backup: {Path.GetFileName(dir)}");
+                        Debug.WriteLine($"Restoring meta.json from backup: {folderName}");
                         File.Copy(backupPath, metaPath);
                     }
 
                     if (!File.Exists(metaPath))
                         continue;
 
-                    SteamMeta? meta = JsonSerializer.Deserialize<SteamMeta>(
-                        await File.ReadAllTextAsync(metaPath));
+                    SteamMeta? meta;
 
-                    if (meta == null)
+                    try
+                    {
+                        meta = JsonSerializer.Deserialize<SteamMeta>(
+                            await File.ReadAllTextAsync(metaPath));
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"Invalid meta.json in '{folderName}': {ex.Message}");
+                        continue;
+                    }
+
+                    if (meta == null || string.IsNullOrWhiteSpace(meta.Name))
                         continue;
 
-                    MetaHelper? helper = null;
+                    // -------------------------
+                    // Helper
+                    // -------------------------
+
+                    MetaHelper helper = new();
+
                     string helperPath = Path.Combine(dir, "meta.helper.json");
 
-                    Debug.WriteLine($"Helper: {helper?.Type ?? "NULL"}");
                     if (File.Exists(helperPath))
                     {
-                        helper = JsonSerializer.Deserialize<MetaHelper>(
-                            await File.ReadAllTextAsync(helperPath));
+                        try
+                        {
+                            helper = JsonSerializer.Deserialize<MetaHelper>(
+                                await File.ReadAllTextAsync(helperPath))
+                                ?? new MetaHelper();
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine($"Invalid helper file in '{folderName}': {ex.Message}");
+                        }
                     }
 
-                    if (customOnly && helper?.Type != "Custom")
+                    Debug.WriteLine($"Helper: {helper.Type}");
+
+                    if (customOnly && helper.Type != "Custom")
                         continue;
 
+                    // -------------------------
+                    // Launch
+                    // -------------------------
+
                     LaunchInfo? launch = null;
+
                     string launchPath = Path.Combine(dir, "launch.json");
-                    Debug.WriteLine($"Launch: {(launch != null)}");
+
                     if (File.Exists(launchPath))
                     {
-                        launch = JsonSerializer.Deserialize<LaunchInfo>(
-                            await File.ReadAllTextAsync(launchPath));
+                        try
+                        {
+                            launch = JsonSerializer.Deserialize<LaunchInfo>(
+                                await File.ReadAllTextAsync(launchPath));
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine($"Invalid launch.json in '{folderName}': {ex.Message}");
+                        }
                     }
+
+                    Debug.WriteLine($"Launch: {(launch != null)}");
 
                     CacheGame game = new()
                     {
-                        AppId = int.Parse(Path.GetFileName(dir)),
+                        AppId = appId,
                         Folder = dir,
                         Meta = meta,
                         Helper = helper,
                         Launch = launch
                     };
 
+                    // -------------------------
                     // Cover
+                    // -------------------------
+
                     string boxart = Path.Combine(dir, "boxart.jpg");
                     string cover = Path.Combine(dir, "cover.jpg");
 
@@ -113,7 +162,10 @@ namespace Boxroom_Studio
                     else if (File.Exists(cover))
                         game.CoverPath = cover;
 
+                    // -------------------------
                     // Screenshots
+                    // -------------------------
+
                     foreach (string image in Directory.EnumerateFiles(dir, "screen_*.jpg"))
                     {
                         game.Screenshots.Add(image);
@@ -124,7 +176,7 @@ namespace Boxroom_Studio
                 }
                 catch (Exception ex)
                 {
-                    Debug.WriteLine($"Error loading game from directory '{dir}': {ex.Message}");
+                    Debug.WriteLine($"Error loading game from directory '{dir}': {ex}");
                 }
             }
 
@@ -260,6 +312,26 @@ namespace Boxroom_Studio
                 // Custom AppIds start at _startingId
                 if (appId < _startingId)
                     continue;
+
+                // Validate the cache entry before adding it
+                string metaPath = Path.Combine(folder, CacheFiles.Meta);
+
+                if (!File.Exists(metaPath))
+                    continue;
+
+                try
+                {
+                    SteamMeta? meta = JsonSerializer.Deserialize<SteamMeta>(
+                        await File.ReadAllTextAsync(metaPath));
+
+                    if (meta == null)
+                        continue;
+                }
+                catch
+                {
+                    // Invalid/corrupt metadata, skip it.
+                    continue;
+                }
 
                 if (existingIds.Add(appId))
                 {
