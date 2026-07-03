@@ -46,8 +46,24 @@ namespace Boxroom_Studio
             };
 
             GameEditor.GameSaved += GameEditor_GameSaved;
+            GameEditor.GameDeleted += GameEditor_GameDeleted;
 
+        }
 
+        private void GameEditor_GameDeleted(CacheGame game)
+        {
+            var item = GamesList.Items
+                .OfType<ListBoxItem>()
+                .FirstOrDefault(x =>
+                    x.Tag is CacheGame g &&
+                    g.AppId == game.AppId);
+
+            if (item != null)
+                GamesList.Items.Remove(item);
+
+            CustomGames.RemoveAll(g => g.AppId == game.AppId);
+
+            StatusText.Text = $"Deleted {game.Meta.Name}";
         }
 
         public void CheckForUpdates(bool automatic)

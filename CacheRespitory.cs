@@ -276,5 +276,16 @@ namespace Boxroom_Studio
                         WriteIndented = false
                     }));
         }
+
+        public async Task DeleteGameAsync(CacheGame game)
+        {
+            if (string.IsNullOrWhiteSpace(game.Folder))
+                return;
+
+            if (Directory.Exists(game.Folder))
+            {
+                await Task.Run(() => Directory.Delete(game.Folder, true));
+            }
+        }
     }
 }

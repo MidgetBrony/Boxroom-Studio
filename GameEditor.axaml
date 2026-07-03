@@ -235,6 +235,13 @@
                         Grid.Column="2"
                         Content="Save" Click="SaveButton_Click"/>
 
+                
+                <Button Name="DeleteButton"
+                        Content="Delete"
+                        Background="Red"
+                        Foreground="White"
+                        Click="DeleteButton_Click"/>
+
             </Grid>
             </Border>
     </Grid>
