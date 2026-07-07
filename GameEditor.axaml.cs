@@ -107,7 +107,7 @@ public partial class GameEditor : UserControl
             AppId = new CacheRespitory().GetNextCustomAppId(),
             Meta = new SteamMeta
             {
-                Type = "Custom",
+                GameType = "game",
                 Name = "",
                 PlayTimeMinutes = 0
             },

@@ -41,7 +41,30 @@ namespace Boxroom_Studio
 
             return nextId;
         }
+        private static bool UpdateLegacyMeta(SteamMeta meta)
+        {
+            if (meta == null)
+                return false;
 
+            bool changed = false;
+
+            // Legacy Studio custom games used "Custom".
+            // BOXROOM now expects "game".
+            if (string.Equals(meta.GameType, "Custom", StringComparison.OrdinalIgnoreCase))
+            {
+                meta.GameType = "game";
+                changed = true;
+            }
+
+            // Some older versions may have left this blank.
+            if (string.IsNullOrWhiteSpace(meta.GameType))
+            {
+                meta.GameType = "game";
+                changed = true;
+            }
+
+            return changed;
+        }
         public async Task<List<CacheGame>> LoadGamesAsync(bool customOnly)
         {
             List<CacheGame> games = new();
@@ -53,7 +76,7 @@ namespace Boxroom_Studio
                 try
                 {
                     Debug.WriteLine("Reading meta.json");
-                    Logger.Log($"Reading meta.json from {dir}");
+                    Logger.Info($"Reading meta.json from {dir}");
 
                     string folderName = Path.GetFileName(dir);
 
@@ -84,6 +107,15 @@ namespace Boxroom_Studio
                     {
                         meta = JsonSerializer.Deserialize<SteamMeta>(
                             await File.ReadAllTextAsync(metaPath));
+
+                        if (UpdateLegacyMeta(meta))
+                        {
+                            await File.WriteAllTextAsync(
+                                metaPath,
+                                JsonSerializer.Serialize(meta, JsonOptions));
+
+                            Logger.Info($"Updated legacy metadata: {meta.Name}");
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -99,7 +131,10 @@ namespace Boxroom_Studio
                     // Helper
                     // -------------------------
 
-                    MetaHelper helper = new();
+                    MetaHelper helper = new()
+                    {
+                        Type = "Steam"
+                    };
 
                     string helperPath = Path.Combine(dir, "meta.helper.json");
 
@@ -109,13 +144,23 @@ namespace Boxroom_Studio
                         {
                             helper = JsonSerializer.Deserialize<MetaHelper>(
                                 await File.ReadAllTextAsync(helperPath))
-                                ?? new MetaHelper();
+                                ?? new MetaHelper { Type = "Steam" };
                         }
                         catch (Exception ex)
                         {
                             Debug.WriteLine($"Invalid helper file in '{folderName}': {ex.Message}");
                             Logger.Error(ex);
+
+                            helper = new MetaHelper
+                            {
+                                Type = "Steam"
+                            };
                         }
+                    }
+
+                    if (string.IsNullOrWhiteSpace(helper.Type))
+                    {
+                        helper.Type = "Steam";
                     }
 
                     Debug.WriteLine($"Helper: {helper.Type}");
@@ -306,6 +351,10 @@ namespace Boxroom_Studio
                 throw new InvalidOperationException(
                     "owned_games.json is invalid.");
 
+            // Ensure collections exist (older files may not contain them)
+            owned.Names ??= new Dictionary<int, string>();
+            owned.Playtime ??= new Dictionary<int, int>();
+
             HashSet<int> existingIds = new(owned.AppIds);
 
             foreach (string folder in Directory.GetDirectories(
@@ -320,18 +369,19 @@ namespace Boxroom_Studio
                 if (appId < _startingId)
                     continue;
 
-                // Validate the cache entry before adding it
                 string metaPath = Path.Combine(folder, CacheFiles.Meta);
 
                 if (!File.Exists(metaPath))
                     continue;
 
+                SteamMeta? meta;
+
                 try
                 {
-                    SteamMeta? meta = JsonSerializer.Deserialize<SteamMeta>(
+                    meta = JsonSerializer.Deserialize<SteamMeta>(
                         await File.ReadAllTextAsync(metaPath));
 
-                    if (meta == null)
+                    if (meta == null || string.IsNullOrWhiteSpace(meta.Name))
                         continue;
                 }
                 catch
@@ -344,6 +394,10 @@ namespace Boxroom_Studio
                 {
                     owned.AppIds.Add(appId);
                 }
+
+                // Keep the dictionaries in sync with AppIds
+                owned.Names[appId] = meta.Name;
+                owned.Playtime.TryAdd(appId, 0);
             }
 
             await File.WriteAllTextAsync(

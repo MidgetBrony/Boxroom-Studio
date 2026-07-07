@@ -14,6 +14,10 @@ namespace Boxroom_Studio
     public class OwnedGames
     {
         public List<int> AppIds { get; set; } = new();
+
+        public Dictionary<int, string> Names { get; set; } = new();
+
+        public Dictionary<int, int> Playtime { get; set; } = new();
     }
 
     public class SteamMeta
@@ -21,7 +25,7 @@ namespace Boxroom_Studio
         public int PlayTimeMinutes { get; set; }
         public string Name { get; set; } = "";
         public string ShortDescription { get; set; } = "";
-        public string Type { get; set; } = "";
+        public string GameType { get; set; } = "";
         public string DetailedDescription { get; set; } = "";
         public string AboutTheGame { get; set; } = "";
         public string BoxArtUrlBase { get; set; } = "";
