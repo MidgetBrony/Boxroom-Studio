@@ -217,29 +217,96 @@
 
             </TabItem>
 
+            <TabItem Header="Boxroom-Plus">
+
+    <StackPanel Margin="12" Spacing="12">
+
+        <TextBlock
+            Text="Case Appearance"
+            FontSize="18"
+            FontWeight="Bold"/>
+
+        <TextBlock Text="Platform"/>
+
+        <ComboBox
+            x:Name="PlatformBox"
+            SelectedIndex="0">
+
+            <ComboBoxItem Content="Steam" Tag="steam"/>
+            <ComboBoxItem Content="GOG" Tag="gog"/>
+            <ComboBoxItem Content="Epic Games" Tag="epic"/>
+            <ComboBoxItem Content="EA App" Tag="ea"/>
+            <ComboBoxItem Content="Ubisoft Connect" Tag="ubisoft"/>
+            <ComboBoxItem Content="itch.io" Tag="itch"/>
+            <ComboBoxItem Content="ROM / Emulator" Tag="rom"/>
+            <ComboBoxItem Content="Custom" Tag="custom"/>
+
+        </ComboBox>
+
+        <TextBlock Text="Case Color"/>
+
+        <TextBox
+            x:Name="CaseColorBox"
+            Watermark="#FFD700"
+            TextChanged="CaseColorBox_TextChanged"/>
+
+        <Border
+            x:Name="CaseColorPreview"
+            Width="48"
+            Height="48"
+            CornerRadius="4"
+            BorderBrush="Gray"
+            BorderThickness="1"/>
+
+        <TextBlock
+            FontSize="11"
+            Opacity="0.7"
+            TextWrapping="Wrap"
+            Text="Leave the Case Color blank to use the selected platform's default color. Enter a HTML hex color such as #FFD700 to override it."/>
+
+        <Border
+            Padding="10"
+            Background="{DynamicResource WarningBackground}"
+            BorderBrush="Goldenrod"
+            BorderThickness="1">
+
+            <TextBlock
+                TextWrapping="Wrap"
+                Text="Case colors and custom platforms require Boxroom-Plus."/>
+
+        </Border>
+
+    </StackPanel>
+
+</TabItem>
+
         </TabControl>
             <Border Grid.Row="2" Padding="10">
 
-            <Grid ColumnDefinitions="*,Auto,Auto"
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto"
                     ColumnSpacing="8">
 
                 <TextBlock x:Name="EditorStatus"
+                           Grid.Column="1"
+                           Margin="12,0,0,0"
                             VerticalAlignment="Center"
                             Text=""/>
 
                 <Button x:Name="SearchIgdbButton"
-                        Grid.Column="1"
+                        Grid.Column="2"
                         Content="Search IGDB" Click="SearchIgdbButton_Click"/>
 
                 <Button x:Name="SaveButton"
-                        Grid.Column="2"
+                        Grid.Column="3"
                         Content="Save" Click="SaveButton_Click"/>
 
                 
-                <Button Name="DeleteButton"
-                        Content="Delete"
+                <Button x:Name="DeleteButton"
+                        Grid.Column="0"
+                        Margin="8,0,0,0"
                         Background="Red"
                         Foreground="White"
+                        Content="Delete"
                         Click="DeleteButton_Click"/>
 
             </Grid>

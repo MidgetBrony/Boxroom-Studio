@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using System;
@@ -94,7 +95,20 @@ public partial class GameEditor : UserControl
             ScreenshotsList.Items.Add(screenshot);
         }
 
+        // meta.helper.json
+CaseColorBox.Text = game.Helper.CaseColor ?? "";
 
+foreach (ComboBoxItem item in PlatformBox.Items!)
+{
+    if (string.Equals(
+            item.Tag?.ToString(),
+            game.Helper.Platform,
+            StringComparison.OrdinalIgnoreCase))
+    {
+        PlatformBox.SelectedItem = item;
+        break;
+    }
+}
     }
 
     /// <summary>
@@ -114,7 +128,8 @@ public partial class GameEditor : UserControl
             Launch = new LaunchInfo(),
             Helper = new MetaHelper
             {
-                Type = "Custom"
+                Type = "Custom",
+                Platform = "custom",
             }
         };
 
@@ -180,7 +195,8 @@ public partial class GameEditor : UserControl
 
         _currentGame.Helper ??= new MetaHelper
         {
-            Type = "Steam"
+            Type = "Steam",
+            Platform="custom"
         };
         // Save helper metadata
         _currentGame.Helper.IGDBId = selectedGame.Id;
@@ -335,6 +351,17 @@ public partial class GameEditor : UserControl
     {
         if (_currentGame == null)
             return;
+
+        _currentGame.Helper ??= new MetaHelper();
+
+        _currentGame.Helper.CaseColor =
+            CaseColorBox.Text?.Trim() ?? "";
+
+        if (PlatformBox.SelectedItem is ComboBoxItem item)
+        {
+            _currentGame.Helper.Platform =
+                item.Tag?.ToString() ?? "steam";
+        }
 
         // Update from UI
         _currentGame.Meta.Name = NameBox.Text?.Trim() ?? "";
@@ -542,6 +569,27 @@ public partial class GameEditor : UserControl
         finally
         {
             DeleteButton.IsEnabled = true;
+        }
+    }
+
+    private void CaseColorBox_TextChanged(object? sender, TextChangedEventArgs e)
+    {
+        string text = CaseColorBox.Text?.Trim() ?? "";
+
+        if (string.IsNullOrEmpty(text))
+        {
+            CaseColorPreview.Background = null;
+            return;
+        }
+
+        if (Color.TryParse(text, out Color color))
+        {
+            CaseColorPreview.Background = new SolidColorBrush(color);
+        }
+        else
+        {
+            // Bright red = invalid hex
+            CaseColorPreview.Background = new SolidColorBrush(Colors.Red);
         }
     }
 }

@@ -70,7 +70,24 @@ namespace Boxroom_Studio
 
     public class MetaHelper
     {
+        /// <summary>
+        /// Entry type used by Boxroom Studio.
+        /// Examples: Custom, Steam
+        /// </summary>
         public string Type { get; set; } = "Custom";
+
+        /// <summary>
+        /// Platform used by Boxroom-Plus.
+        /// Examples: steam, gog, epic, ea, ubisoft, itch, emulator, rom, custom
+        /// </summary>
+        public string Platform { get; set; } = "custom";
+
+        /// <summary>
+        /// Optional override for the case color.
+        /// HTML color (#RRGGBB or #RRGGBBAA).
+        /// Empty = use platform default.
+        /// </summary>
+        public string CaseColor { get; set; } = "";
 
         public int? IGDBId { get; set; }
 
