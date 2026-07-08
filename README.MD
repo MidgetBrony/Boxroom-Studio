@@ -4,8 +4,9 @@ A companion application for **BOXROOM** that makes creating, editing,
 and managing games in your BOXROOM library easy.
 
 Whether you're adding custom games, updating metadata, downloading
-artwork, or recovering from cache issues, Boxroom Studio provides a
-simple interface for managing your library.
+artwork, configuring Boxroom Plus features, or recovering from cache
+issues, Boxroom Studio provides a simple interface for managing your
+library.
 
 ![Mario running in BOXROOM](DOCS/image.png)
 
@@ -16,12 +17,15 @@ simple interface for managing your library.
 - 🎮 Create and edit custom games
 - ✏️ Edit existing Steam game metadata *(optional)*
 - 🖼 Download metadata directly from IGDB
-- 📷 Download screenshots automatically
+- 📷 Download up to 3 screenshots automatically
 - 🖼 Browse and apply SteamGridDB artwork
-- 🚀 Configure custom launch settings *(requires Boxroom-Plus)*
+- 🚀 Configure custom launch settings *(requires Boxroom Plus)*
+- 🎨 Configure custom case colors *(requires Boxroom Plus)*
+- 🏷 Configure application platforms *(Steam, GOG, Epic, EA, Ubisoft, itch.io, Emulator, ROM, Custom)*
 - 📁 Browse for executables, working directories, and cover art
 - 🔄 Sync custom games back into `owned_games.json`
 - 💾 Automatic metadata backup and recovery
+- 🔧 Automatic legacy metadata migration
 - ⚙️ First-run setup wizard
 - 🌙 Dark and Light themes
 - 🔄 Built-in automatic updater
@@ -58,21 +62,29 @@ By default, Boxroom Studio focuses on custom games.
 
 If you would also like to edit existing Steam games, enable:
 
-**Settings → Show Steam games in editor**
+**Settings → Show Steam Games in Editor**
 
 This allows artwork, metadata, and screenshots to be updated for your
 existing Steam library.
 
 ------------------------------------------------------------------------
 
-## Launch Settings
+## Boxroom Plus Integration
 
-> **Requires Boxroom-Plus**
+> **Requires Boxroom Plus**
 
-The standard version of BOXROOM ignores custom launch settings.
+Boxroom Studio includes native support for configuring Boxroom Plus
+features.
 
-If you want support for emulators, custom launch arguments, or other
-non-Steam titles, install **Boxroom-Plus**.
+Supported options include:
+
+- Custom launch settings
+- Platform selection
+- Custom case colors
+- Automatic generation of `meta.helper.json`
+
+These settings are ignored by the base version of BOXROOM and are only
+used when Boxroom Plus is installed.
 
 GitHub:
 
@@ -102,8 +114,8 @@ If an older version of BOXROOM removes a game's metadata during a cache
 refresh, Studio will automatically restore it the next time the cache is
 loaded.
 
-This compatibility safeguard is no longer required once newer BOXROOM
-versions are installed, but remains enabled to protect existing users.
+Older metadata formats are also automatically upgraded when loaded to
+maintain compatibility with newer releases.
 
 ------------------------------------------------------------------------
 
@@ -137,11 +149,9 @@ After the initial launch, automatic updates will work normally.
 ### Launching Games
 
 When using **BOXROOM** through **Proton**, launching native Linux
-executables directly from Boxroom Plus may not work, as Proton does not
-always forward arbitrary process launches to the Linux host.
+executables directly from Boxroom Plus may not work.
 
-If you wish to launch native Linux applications (such as RetroArch,
-Heroic, Lutris, or custom scripts), the recommended workaround is to:
+The recommended workaround is to:
 
 1. Add the application to Steam as a **Non-Steam Game**.
 2. Create a desktop shortcut from Steam.
@@ -150,16 +160,15 @@ Heroic, Lutris, or custom scripts), the recommended workaround is to:
 
 Steam will then handle launching the native application correctly.
 
-Native Linux support may improve in the future.
-
 ------------------------------------------------------------------------
 
 ## Known Limitations
 
-- Launch Settings require **Boxroom-Plus**
+- Boxroom Plus features require **Boxroom Plus**
 - IGDB and SteamGridDB require personal API keys
 - Up to **3 screenshots** are downloaded per game
-- Custom games use AppIDs beginning at **900000000** to avoid conflicts
+- Custom AppIDs begin at **900000000** to avoid conflicts
+- Native Linux launching depends on Proton limitations
 
 ------------------------------------------------------------------------
 
