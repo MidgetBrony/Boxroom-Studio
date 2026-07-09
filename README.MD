@@ -183,3 +183,12 @@ Steam will then handle launching the native application correctly.
 ## License
 
 MIT
+
+## 💬 Discord
+
+Join the Boxroom Modding community for support, development discussion,
+bug reports, feature requests, and sneak peeks of upcoming releases.
+
+[![Discord](https://img.shields.io/badge/Discord-Boxroom%20Modding-5865F2?logo=discord&logoColor=white)](https://discord.gg/M2ebcaTEMe)
+
+https://discord.gg/M2ebcaTEMe
