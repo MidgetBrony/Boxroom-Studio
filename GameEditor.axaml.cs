@@ -80,7 +80,14 @@ public partial class GameEditor : UserControl
             CoverImage.Source = null;
         }
 
-        ReleaseDatePicker.SelectedDate = Convert.ToDateTime(game.Meta.ReleaseDate);
+        if (DateTime.TryParse(game.Meta.ReleaseDate, out var date))
+        {
+            ReleaseDatePicker.SelectedDate = date;
+        }
+        else
+        {
+            ReleaseDatePicker.SelectedDate = null;
+        }
         DeveloperBox.Text = string.Join(", ", game.Meta.Developers);
         PublisherBox.Text = string.Join(", ", game.Meta.Publishers);
         GenreBox.Text = string.Join(", ", game.Meta.Genres);

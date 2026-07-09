@@ -103,28 +103,54 @@ namespace Boxroom_Studio
 
                     SteamMeta? meta;
 
+                    string json = await File.ReadAllTextAsync(metaPath);
+
                     try
                     {
-                        meta = JsonSerializer.Deserialize<SteamMeta>(
-                            await File.ReadAllTextAsync(metaPath));
+                        meta = JsonSerializer.Deserialize<SteamMeta>(json);
+                    }
+                    catch (JsonException ex)
+                    {
+                        Logger.Warning($"meta.json failed to deserialize for '{folderName}'. Attempting repair...");
 
-                        if (UpdateLegacyMeta(meta))
+                        if (!TryRepairMetaJson(json, out string repairedJson))
                         {
-                            await File.WriteAllTextAsync(
-                                metaPath,
-                                JsonSerializer.Serialize(meta, JsonOptions));
+                            Debug.WriteLine($"Invalid meta.json in '{folderName}': {ex.Message}");
+                            Logger.Error(ex);
+                            continue;
+                        }
 
-                            Logger.Info($"Updated legacy metadata: {meta.Name}");
+                        try
+                        {
+                            meta = JsonSerializer.Deserialize<SteamMeta>(repairedJson);
+
+                            await File.WriteAllTextAsync(metaPath, repairedJson);
+
+                            Logger.Info($"Successfully repaired meta.json for '{folderName}'.");
+                        }
+                        catch (Exception repairEx)
+                        {
+                            Debug.WriteLine($"Repair failed for '{folderName}': {repairEx.Message}");
+                            Logger.Error(repairEx);
+                            continue;
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"Invalid meta.json in '{folderName}': {ex.Message}");
-                        Logger.Error(ex);
+
+                    if (meta == null)
                         continue;
+
+                    bool changed = UpdateLegacyMeta(meta);
+
+                    if (changed)
+                    {
+                        await File.WriteAllTextAsync(
+                            metaPath,
+                            JsonSerializer.Serialize(meta, JsonOptions));
+
+                        Logger.Info($"Updated legacy metadata: {meta.Name}");
                     }
 
-                    if (meta == null || string.IsNullOrWhiteSpace(meta.Name))
+                    if (string.IsNullOrWhiteSpace(meta.Name))
                         continue;
 
                     // -------------------------
@@ -233,6 +259,79 @@ namespace Boxroom_Studio
             }
 
             return games;
+        }
+
+        private static bool TryRepairMetaJson(string json, out string repairedJson)
+        {
+            repairedJson = json;
+
+            if (string.IsNullOrEmpty(json))
+                return false;
+
+            StringBuilder sb = new(json.Length + 64);
+
+            bool inString = false;
+            bool escaped = false;
+            bool changed = false;
+
+            foreach (char c in json)
+            {
+                if (escaped)
+                {
+                    sb.Append(c);
+                    escaped = false;
+                    continue;
+                }
+
+                if (c == '\\')
+                {
+                    sb.Append(c);
+                    escaped = true;
+                    continue;
+                }
+
+                if (c == '"')
+                {
+                    inString = !inString;
+                    sb.Append(c);
+                    continue;
+                }
+
+                if (inString)
+                {
+                    switch (c)
+                    {
+                        case '\r':
+                            sb.Append("\\r");
+                            changed = true;
+                            break;
+
+                        case '\n':
+                            sb.Append("\\n");
+                            changed = true;
+                            break;
+
+                        case '\t':
+                            sb.Append("\\t");
+                            changed = true;
+                            break;
+
+                        default:
+                            sb.Append(c);
+                            break;
+                    }
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+
+            if (!changed)
+                return false;
+
+            repairedJson = sb.ToString();
+            return true;
         }
 
         private static readonly JsonSerializerOptions JsonOptions = new()
