@@ -146,6 +146,8 @@ namespace Boxroom_Studio
 
             CustomGames = await new CacheRespitory().LoadGamesAsync(SettingsManager.Current.CustomOnly);
 
+            CustomGames.Sort((a, b) => string.Compare(a.Meta.Name, b.Meta.Name, StringComparison.OrdinalIgnoreCase));
+
             GamesList.Items.Clear();
 
             foreach (CacheGame game in CustomGames)
@@ -208,6 +210,38 @@ namespace Boxroom_Studio
             ThemeManager.Apply(SettingsManager.Current.Theme);
             await LoadCustomGames();
 
+        }
+
+
+        private void GameSearchBox_TextChanged(object? sender, TextChangedEventArgs e)
+        {
+            RefreshGameList();
+        }
+
+        private void RefreshGameList()
+        {
+            string filter = GameSearchBox.Text?.Trim() ?? "";
+
+            GamesList.Items.Clear();
+
+            IEnumerable<CacheGame> games = CustomGames;
+
+            if (!string.IsNullOrWhiteSpace(filter))
+            {
+                games = games.Where(g =>
+                    g.Meta.Name.Contains(filter, StringComparison.CurrentCultureIgnoreCase));
+            }
+
+            foreach (CacheGame game in games)
+            {
+                GamesList.Items.Add(new ListBoxItem
+                {
+                    Content = game.Meta.Name,
+                    Tag = game
+                });
+            }
+
+            StatusText.Text = $"Showing {games.Count()} of {CustomGames.Count} games.";
         }
     }
 }

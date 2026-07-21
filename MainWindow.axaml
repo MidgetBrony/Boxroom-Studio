@@ -53,13 +53,26 @@ When Boxroom refreshes your Steam library, it may recreate owned_games.json, rem
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Game List -->
-            <Border Grid.Column="0"
-                    Margin="10">
+        <!-- Game List -->
+        <Border Grid.Column="0"
+                Margin="10">
 
-                <ListBox x:Name="GamesList" SelectionChanged="GamesList_SelectionChanged"/>
+            <DockPanel LastChildFill="True">
 
-            </Border>
+                <!-- Search -->
+                <TextBox x:Name="GameSearchBox"
+                         DockPanel.Dock="Top"
+                         Margin="0,0,0,8"
+                         Watermark="Search games..."
+                         TextChanged="GameSearchBox_TextChanged"/>
+
+                <!-- Game List -->
+                <ListBox x:Name="GamesList"
+                         SelectionChanged="GamesList_SelectionChanged"/>
+
+            </DockPanel>
+
+        </Border>
 
             <!-- Editor -->
             <Border Grid.Column="1"
