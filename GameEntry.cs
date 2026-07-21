@@ -23,21 +23,33 @@ namespace Boxroom_Studio
     public class SteamMeta
     {
         public int PlayTimeMinutes { get; set; }
+
+        public string? AppType { get; set; }
+
+        // Legacy - migrate then remove later
+        public string? GameType { get; set; }
+
         public string Name { get; set; } = "";
         public string ShortDescription { get; set; } = "";
-        public string GameType { get; set; } = "";
         public string DetailedDescription { get; set; } = "";
         public string AboutTheGame { get; set; } = "";
+
         public string BoxArtUrlBase { get; set; } = "";
         public string FallbackHeaderUrl { get; set; } = "";
         public string ReleaseDate { get; set; } = "";
+
         public List<string> Developers { get; set; } = new();
         public List<string> Publishers { get; set; } = new();
         public List<string> Genres { get; set; } = new();
+
+        public string LaunchExePath { get; set; } = "";
+
         public List<string> ScreenshotUrls { get; set; } = new();
 
+        // Legacy only
         public int AppId { get; set; } = -1;
     }
+
     public class CacheGame
     {
         public string Folder { get; set; } = "";

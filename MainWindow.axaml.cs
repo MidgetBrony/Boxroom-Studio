@@ -127,6 +127,7 @@ namespace Boxroom_Studio
 
         private async Task LoadCustomGames()
         {
+            Debug.WriteLine($"CustomOnly = {SettingsManager.Current.CustomOnly}");
             StatusText.Text = "Loading custom games...";
 
             string cachePath = SettingsManager.Current.BoxroomCachePath;
@@ -141,6 +142,7 @@ namespace Boxroom_Studio
                 return;
             }
 
+            new CacheRespitory().CheckLegacyAsync();
 
             CustomGames = await new CacheRespitory().LoadGamesAsync(SettingsManager.Current.CustomOnly);
 

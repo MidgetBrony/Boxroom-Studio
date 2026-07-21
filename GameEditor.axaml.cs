@@ -99,7 +99,15 @@ public partial class GameEditor : UserControl
 
         foreach (string screenshot in game.Screenshots)
         {
-            ScreenshotsList.Items.Add(screenshot);
+            Bitmap bitmap = new(screenshot);
+
+            ScreenshotsList.Items.Add(new Image
+            {
+                Width = 240,
+                Height = 135,
+                Stretch = Stretch.UniformToFill,
+                Source = bitmap
+            });
         }
 
         // meta.helper.json
@@ -598,5 +606,189 @@ foreach (ComboBoxItem item in PlatformBox.Items!)
             // Bright red = invalid hex
             CaseColorPreview.Background = new SolidColorBrush(Colors.Red);
         }
+    }
+
+    private void RefreshScreenshots()
+    {
+        ScreenshotsList.Items.Clear();
+
+        if (_currentGame == null)
+            return;
+
+        if (_currentGame.PendingScreenshotBitmaps.Count > 0)
+        {
+            foreach (Bitmap bitmap in _currentGame.PendingScreenshotBitmaps)
+            {
+                ScreenshotsList.Items.Add(new Image
+                {
+                    Width = 240,
+                    Height = 135,
+                    Stretch = Stretch.UniformToFill,
+                    Source = bitmap
+                });
+            }
+        }
+        else
+        {
+            foreach (string file in _currentGame.Screenshots)
+            {
+                ScreenshotsList.Items.Add(new Image
+                {
+                    Width = 240,
+                    Height = 135,
+                    Stretch = Stretch.UniformToFill,
+                    Source = new Bitmap(file)
+                });
+            }
+        }
+
+        int count = _currentGame.PendingScreenshotBitmaps.Count > 0
+            ? _currentGame.PendingScreenshotBitmaps.Count
+            : _currentGame.Screenshots.Count;
+
+        AddScreenshotButton.IsEnabled = count < 3;
+        ReplaceScreenshotButton.IsEnabled = ScreenshotsList.SelectedIndex >= 0;
+        DeleteScreenshotButton.IsEnabled = ScreenshotsList.SelectedIndex >= 0;
+    }
+
+    private async void AddScreenshotButton_Click(object? sender, RoutedEventArgs e)
+    {
+        Debug.WriteLine($"AddScreenshotButton_Click: {_currentGame?.AppId}");
+
+        if (_currentGame == null)
+            return;
+
+        int count = Math.Max(
+            _currentGame.PendingScreenshotBytes.Count,
+            _currentGame.Screenshots.Count);
+
+        if (count >= 3)
+            return;
+
+        Window? owner = GetOwnerWindow();
+
+        if (owner == null)
+            return;
+
+        var files = await owner.StorageProvider.OpenFilePickerAsync(
+            new FilePickerOpenOptions
+            {
+                Title = "Select Screenshot",
+                AllowMultiple = false,
+                FileTypeFilter =
+                [
+                    new FilePickerFileType("Images")
+                {
+                    Patterns = new[]
+                    {
+                        "*.jpg",
+                        "*.jpeg",
+                        "*.png",
+                        "*.webp"
+                    }
+                },
+                FilePickerFileTypes.All
+                ]
+            });
+
+        string? path = files.FirstOrDefault()?.TryGetLocalPath();
+
+        if (string.IsNullOrWhiteSpace(path))
+            return;
+
+        byte[] bytes = await File.ReadAllBytesAsync(path);
+
+        _currentGame.PendingScreenshotBytes.Add(bytes);
+        _currentGame.PendingScreenshotBitmaps.Add(new Bitmap(path));
+
+        RefreshScreenshots();
+    }
+
+    private async void ReplaceScreenshotButton_Click(object? sender, RoutedEventArgs e)
+    {
+        if (_currentGame == null)
+            return;
+
+        int index = ScreenshotsList.SelectedIndex;
+
+        if (index < 0)
+            return;
+
+        Window? owner = GetOwnerWindow();
+
+        if (owner == null)
+            return;
+
+        var files = await owner.StorageProvider.OpenFilePickerAsync(
+            new FilePickerOpenOptions
+            {
+                Title = "Replace Screenshot",
+                AllowMultiple = false,
+                FileTypeFilter =
+                [
+                    new FilePickerFileType("Images")
+                {
+                    Patterns = new[]
+                    {
+                        "*.jpg",
+                        "*.jpeg",
+                        "*.png",
+                        "*.webp"
+                    }
+                },
+                FilePickerFileTypes.All
+                ]
+            });
+
+        string? path = files.FirstOrDefault()?.TryGetLocalPath();
+
+        if (string.IsNullOrWhiteSpace(path))
+            return;
+
+        byte[] bytes = await File.ReadAllBytesAsync(path);
+        Bitmap bitmap = new(path);
+
+        while (_currentGame.PendingScreenshotBytes.Count <= index)
+        {
+            string existing = _currentGame.Screenshots[_currentGame.PendingScreenshotBytes.Count];
+
+            _currentGame.PendingScreenshotBytes.Add(await File.ReadAllBytesAsync(existing));
+            _currentGame.PendingScreenshotBitmaps.Add(new Bitmap(existing));
+        }
+
+        _currentGame.PendingScreenshotBytes[index] = bytes;
+        _currentGame.PendingScreenshotBitmaps[index] = bitmap;
+
+        RefreshScreenshots();
+    }
+
+    private void DeleteScreenshotButton_Click(object? sender, RoutedEventArgs e)
+    {
+        if (_currentGame == null)
+            return;
+
+        int index = ScreenshotsList.SelectedIndex;
+
+        if (index < 0)
+            return;
+
+        while (_currentGame.PendingScreenshotBytes.Count < _currentGame.Screenshots.Count)
+        {
+            string existing = _currentGame.Screenshots[_currentGame.PendingScreenshotBytes.Count];
+
+            _currentGame.PendingScreenshotBytes.Add(File.ReadAllBytes(existing));
+            _currentGame.PendingScreenshotBitmaps.Add(new Bitmap(existing));
+        }
+
+        _currentGame.PendingScreenshotBytes.RemoveAt(index);
+        _currentGame.PendingScreenshotBitmaps.RemoveAt(index);
+
+        RefreshScreenshots();
+    }
+
+    private void ScreenshotsList_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        ReplaceScreenshotButton.IsEnabled = ScreenshotsList.SelectedIndex >= 0;
+        DeleteScreenshotButton.IsEnabled = ScreenshotsList.SelectedIndex >= 0;
     }
 }

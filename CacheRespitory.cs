@@ -13,7 +13,9 @@ namespace Boxroom_Studio
     public class CacheRespitory
     {
 
-        private static int _startingId = 900000000;
+        private static int _oldStartingId = 900000000;
+
+        private static int _startingId = -2;
 
         public int GetNextCustomAppId()
         {
@@ -36,7 +38,7 @@ namespace Boxroom_Studio
 
             while (usedIds.Contains(nextId))
             {
-                nextId++;
+                nextId--;
             }
 
             return nextId;
@@ -48,23 +50,17 @@ namespace Boxroom_Studio
 
             bool changed = false;
 
-            // Legacy Studio custom games used "Custom".
-            // BOXROOM now expects "game".
-            if (string.Equals(meta.GameType, "Custom", StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrWhiteSpace(meta.GameType))
             {
-                meta.GameType = "game";
-                changed = true;
-            }
-
-            // Some older versions may have left this blank.
-            if (string.IsNullOrWhiteSpace(meta.GameType))
-            {
-                meta.GameType = "game";
+                // Legacy Studio custom entries
+                meta.AppType = "custom";
+                meta.GameType = "";
                 changed = true;
             }
 
             return changed;
         }
+
         public async Task<List<CacheGame>> LoadGamesAsync(bool customOnly)
         {
             List<CacheGame> games = new();
@@ -184,14 +180,24 @@ namespace Boxroom_Studio
                         }
                     }
 
-                    if (string.IsNullOrWhiteSpace(helper.Type))
+                    if (string.Equals(meta.AppType, "custom", StringComparison.OrdinalIgnoreCase))
+                    {
+                        helper.Type = "Custom";
+                    }
+                    else if (string.IsNullOrWhiteSpace(helper.Type))
                     {
                         helper.Type = "Steam";
                     }
 
-                    Debug.WriteLine($"Helper: {helper.Type}");
+                    // Official BOXROOM custom games don't have helper files.
+                    bool isCustom =
+                        helper.Type.Equals("Custom", StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(meta.AppType, "custom", StringComparison.OrdinalIgnoreCase);
 
-                    if (customOnly && helper.Type != "Custom")
+                    Debug.WriteLine($"Helper: {helper.Type}");
+                    Debug.WriteLine($"Custom: {isCustom}");
+
+                    if (customOnly && !isCustom)
                         continue;
 
                     // -------------------------
@@ -214,6 +220,19 @@ namespace Boxroom_Studio
                             Debug.WriteLine($"Invalid launch.json in '{folderName}': {ex.Message}");
                             Logger.Error(ex);
                         }
+                    }
+
+                    // Official BOXROOM stores launch information directly in meta.json.
+                    if (launch == null &&
+                        !string.IsNullOrWhiteSpace(meta.LaunchExePath))
+                    {
+                        launch = new LaunchInfo
+                        {
+                            Executable = meta.LaunchExePath,
+                            WorkingDirectory = Path.GetDirectoryName(meta.LaunchExePath) ?? "",
+                            Arguments = "",
+                            UseShellExecute = true
+                        };
                     }
 
                     Debug.WriteLine($"Launch: {(launch != null)}");
@@ -363,6 +382,10 @@ namespace Boxroom_Studio
                 File.Copy(metaPath, metaBackupPath, overwrite: true);
             }
 
+            if (game.Launch != null)
+            {
+                game.Meta.LaunchExePath = game.Launch.Executable;
+            }
             // meta.json
             await File.WriteAllTextAsync(
                 metaPath,
@@ -382,6 +405,8 @@ namespace Boxroom_Studio
                 await File.WriteAllTextAsync(
                     launchPath,
                     JsonSerializer.Serialize(game.Launch, JsonOptions));
+
+                game.Meta.LaunchExePath = game.Launch.Executable;
             }
             else if (File.Exists(launchPath))
             {
@@ -433,6 +458,8 @@ namespace Boxroom_Studio
 
         public static async Task SyncCustomGamesAsync()
         {
+
+
             string ownedGamesPath = Path.Combine(
                 SettingsManager.Current.BoxroomCachePath,
                 "owned_games.json");
@@ -450,10 +477,20 @@ namespace Boxroom_Studio
                 throw new InvalidOperationException(
                     "owned_games.json is invalid.");
 
+            // Remove all custom AppIds first
+            owned.AppIds.RemoveAll(id => id <= _startingId || id >= _oldStartingId);
             // Ensure collections exist (older files may not contain them)
             owned.Names ??= new Dictionary<int, string>();
             owned.Playtime ??= new Dictionary<int, int>();
 
+
+            foreach (var id in owned.Names.Keys
+     .Where(id => id <= _startingId || id >= _oldStartingId)
+     .ToList())
+            {
+                owned.Names.Remove(id);
+                owned.Playtime.Remove(id);
+            }
             HashSet<int> existingIds = new(owned.AppIds);
 
             foreach (string folder in Directory.GetDirectories(
@@ -465,7 +502,7 @@ namespace Boxroom_Studio
                     continue;
 
                 // Custom AppIds start at _startingId
-                if (appId < _startingId)
+                if (appId > _startingId)
                     continue;
 
                 string metaPath = Path.Combine(folder, CacheFiles.Meta);
@@ -497,6 +534,7 @@ namespace Boxroom_Studio
                 // Keep the dictionaries in sync with AppIds
                 owned.Names[appId] = meta.Name;
                 owned.Playtime.TryAdd(appId, 0);
+
             }
 
             await File.WriteAllTextAsync(
@@ -507,6 +545,8 @@ namespace Boxroom_Studio
                     {
                         WriteIndented = false
                     }));
+
+
         }
 
         public async Task DeleteGameAsync(CacheGame game)
@@ -518,6 +558,59 @@ namespace Boxroom_Studio
             {
                 await Task.Run(() => Directory.Delete(game.Folder, true));
             }
+        }
+
+        public async Task CheckLegacyAsync()
+        {
+
+            foreach (string dir in Directory.EnumerateDirectories(SettingsManager.Current.BoxroomCachePath))
+            {
+                string folderName = Path.GetFileName(dir);
+
+                if (!int.TryParse(folderName, out int oldId))
+                    continue;
+
+                if (oldId < _oldStartingId)
+                    continue;
+
+                int newId = GetNextCustomAppId();
+
+
+                string oldFolder = dir;
+                string newFolder = Path.Combine(
+                    SettingsManager.Current.BoxroomCachePath,
+                    newId.ToString());
+
+                if (Directory.Exists(newFolder))
+                {
+                    Logger.Warning($"Legacy migration skipped. '{newFolder}' already exists.");
+                    continue;
+                }
+
+                Directory.Move(oldFolder, newFolder);
+
+                string metaPath = Path.Combine(newFolder, CacheFiles.Meta);
+
+                if (File.Exists(metaPath))
+                {
+                    SteamMeta? meta =
+                        JsonSerializer.Deserialize<SteamMeta>(
+                            await File.ReadAllTextAsync(metaPath));
+
+                    if (meta != null)
+                    {
+                        meta.AppId = newId;
+                        meta.AppType = "custom";
+                        meta.GameType = "";
+
+                        await File.WriteAllTextAsync(
+                            metaPath,
+                            JsonSerializer.Serialize(meta, JsonOptions));
+                    }
+                }
+            }
+
+            await SyncCustomGamesAsync();
         }
     }
 }

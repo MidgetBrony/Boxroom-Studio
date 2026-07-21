@@ -205,12 +205,26 @@
                 <Grid Margin="12"
                         RowDefinitions="*,Auto">
 
-                    <ListBox x:Name="ScreenshotsList"/>
+                    <ListBox x:Name="ScreenshotsList"
+         SelectionChanged="ScreenshotsList_SelectionChanged"/>
 
                     <StackPanel Grid.Row="1"
                                 Margin="0,10,0,0"
                                 Orientation="Horizontal"
                                 Spacing="8">
+
+                        <Button x:Name="AddScreenshotButton"
+                                Content="Add..."
+                                Click="AddScreenshotButton_Click"/>
+
+                        <Button x:Name="ReplaceScreenshotButton"
+                                Content="Replace..."
+                                Click="ReplaceScreenshotButton_Click"/>
+
+                        <Button x:Name="DeleteScreenshotButton"
+                                Content="Delete"
+                                Click="DeleteScreenshotButton_Click"/>
+
                     </StackPanel>
 
                 </Grid>
@@ -240,6 +254,8 @@
             <ComboBoxItem Content="itch.io" Tag="itch"/>
             <ComboBoxItem Content="ROM / Emulator" Tag="rom"/>
             <ComboBoxItem Content="Custom" Tag="custom"/>
+            <ComboBoxItem Content="Riot" Tag="riot"/>
+            <ComboBoxItem Content="RetroArch" Tag="retroarch"/>
 
         </ComboBox>
 
